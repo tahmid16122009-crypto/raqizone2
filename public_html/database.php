@@ -1,1 +1,37 @@
-u
+<?php
+class DB {
+    private static ?PDO $pdo = null;
+
+    private static function connect(): PDO {
+        if (self::$pdo === null) {
+            if (!defined('DB_HOST')) require_once __DIR__ . '/config.php';
+            $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
+            self::$pdo = new PDO($dsn, DB_USER, DB_PASS, [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+            ]);
+        }
+        return self::$pdo;
+    }
+
+    public static function run(string $sql, array $params = []): PDOStatement {
+        $stmt = self::connect()->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
+    }
+
+    public static function rows(string $sql, array $params = []): array {
+        return self::run($sql, $params)->fetchAll();
+    }
+
+    public static function row(string $sql, array $params = []): ?array {
+        $r = self::run($sql, $params)->fetch();
+        return $r ?: null;
+    }
+
+    public static function exec(string $sql, array $params = []): int {
+        self::run($sql, $params);
+        return (int)self::connect()->lastInsertId();
+    }
+}
