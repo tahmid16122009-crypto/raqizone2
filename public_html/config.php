@@ -6,9 +6,9 @@ if (session_status() === PHP_SESSION_NONE) {
 define('DB_HOST',   'localhost');
 define('DB_NAME',   'raqizone_raqizone_db');
 define('DB_USER',   'raqizone_raqizone_user');
-define('DB_PASS',   'tahmid2009');
-define('ADMIN_PASS','tahmid2009');
-define('SECRET_KEY','RaqiZone_2026_X7kP9mQ2L8vN5');
+define('DB_PASS',   '******');
+define('ADMIN_PASS','******');
+define('SECRET_KEY','****************');
 define('SITE_URL',  'https://raqizone.com');
 
 if (!function_exists('get_all_settings')) {
