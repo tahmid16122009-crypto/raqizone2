@@ -1,6 +1,5 @@
-# =====================================================
-# COMPREHENSIVE SECURITY CONFIGURATION
-# =====================================================
+RewriteEngine On
+RewriteBase /
 
 # CORE PROTECTION
 Options -Indexes
@@ -9,52 +8,79 @@ Options -Indexes
     Require all denied
 </Files>
 
-# FILE PROTECTION
-<FilesMatch "^(index_backup\.php|\.index_hash|protection_log\.txt|index_modified_.*\.php)$">
-    Require all denied
-</FilesMatch>
-
-<FilesMatch "^(protect_index\.php|auto_protect\.php)$">
-    Require all denied
-    Require ip 127.0.0.1
-</FilesMatch>
-
-<FilesMatch "^(wp-config\.php|php\.ini|php5\.ini|\.user\.ini)$">
-    Require all denied
-</FilesMatch>
-
 <FilesMatch "\.(env|log|sql|bak|ini|conf|dist|old|orig|save|swo|swp)$">
     Require all denied
 </FilesMatch>
 
-<FilesMatch "^\.">
+<FilesMatch "^(wp-config\.php|php\.ini|php5\.ini)$">
     Require all denied
 </FilesMatch>
 
-<Files "xmlrpc.php">
+# .user.ini must stay readable by PHP itself, so we don't block dotfiles globally.
+# Instead we block direct browser access to it specifically.
+<Files ".user.ini">
     Require all denied
 </Files>
 
+# Static ও uploads সরাসরি serve
+RewriteRule ^static/ - [L]
+RewriteRule ^uploads/ - [L]
+RewriteRule ^favicon\. - [L]
 
-# SECURITY FILTERS
+# Admin routes
+RewriteRule ^admin/?$ admin/index.php [L]
+RewriteRule ^admin/login/?$ admin/login.php [L]
+RewriteRule ^admin/logout/?$ admin/logout.php [L]
+RewriteRule ^admin/products/?$ admin/products.php [L]
+RewriteRule ^admin/products/add/?$ admin/product_form.php [L]
+RewriteRule ^admin/products/([0-9]+)/edit/?$ admin/product_form.php?id=$1 [L]
+RewriteRule ^admin/orders/?$ admin/orders.php [L]
+RewriteRule ^admin/orders/([0-9]+)/?$ admin/order_detail.php?id=$1 [L]
+RewriteRule ^admin/edit-ui/?$ admin/edit_ui.php [L]
+RewriteRule ^admin/posts/?$ admin/posts.php [L]
+
+# User routes
+RewriteRule ^home/?$ pages/home.php [L]
+RewriteRule ^product/([0-9]+)/?$ pages/product.php?id=$1 [L]
+RewriteRule ^cart/?$ pages/cart.php [L]
+RewriteRule ^orders/?$ pages/orders.php [L]
+RewriteRule ^orders/([0-9]+)/?$ pages/order_detail.php?id=$1 [L]
+RewriteRule ^me/?$ pages/me.php [L]
+RewriteRule ^updates/?$ pages/updates.php [L]
+RewriteRule ^logout/?$ pages/logout.php [L]
+
+# Auth
+RewriteRule ^auth/login/?$ pages/auth.php [L]
+
+# API routes
+RewriteRule ^api/cart/add/?$ api/cart.php?action=add [L]
+RewriteRule ^api/cart/remove/([0-9]+)/?$ api/cart.php?action=remove&id=$1 [L]
+RewriteRule ^api/cart/update/([0-9]+)/?$ api/cart.php?action=update&id=$1 [L]
+RewriteRule ^api/place-order/?$ api/order.php?action=place [L]
+RewriteRule ^api/orders/([0-9]+)/cancel/?$ api/order.php?action=cancel&id=$1 [L]
+RewriteRule ^api/orders/([0-9]+)/status/?$ api/order.php?action=status&id=$1 [L]
+RewriteRule ^api/orders/([0-9]+)/edit/?$ api/order.php?action=edit&id=$1 [L]
+RewriteRule ^api/upload/?$ api/upload.php [L]
+RewriteRule ^api/admin/?$ api/admin.php [L]
+RewriteRule ^api/search/?$ api/search.php [L]
+RewriteRule ^api/posts/?$ api/posts.php [L]
+
+# Root
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^$ index.php [L]
+
+# SECURITY FILTERS (query string based attack patterns)
 <IfModule mod_rewrite.c>
-    RewriteEngine On
     RewriteCond %{QUERY_STRING} (<|%3C).*script.*(>|%3E) [NC,OR]
     RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
     RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
-    RewriteRule ^ - [F,L]
-
-    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=http:// [OR]
-    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=(\.\.//?)+ [OR]
-    RewriteCond %{QUERY_STRING} [a-zA-Z0-9_]=/([a-z0-9_.]//?)+
     RewriteRule ^ - [F,L]
 
     RewriteCond %{QUERY_STRING} (eval\(|base64_decode|gzip|inflate|proc_open|shell_exec) [NC,OR]
     RewriteCond %{QUERY_STRING} (boot\.ini|etc/passwd|self/environ) [NC]
     RewriteRule ^ - [F,L]
 </IfModule>
-
-# PHP HANDLER (cPanel)
 
 # PERFORMANCE
 <IfModule mod_deflate.c>
@@ -72,7 +98,6 @@ Options -Indexes
 </IfModule>
 
 # SECURITY HEADERS
-# =====================================================
 <IfModule mod_headers.c>
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-Content-Type-Options "nosniff"
