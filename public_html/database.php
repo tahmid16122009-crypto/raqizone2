@@ -16,9 +16,15 @@ class DB {
     }
 
     public static function run(string $sql, array $params = []): PDOStatement {
-        $stmt = self::connect()->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
+        try {
+            $stmt = self::connect()->prepare($sql);
+            $stmt->execute($params);
+            return $stmt;
+        } catch (PDOException $e) {
+            // Real error log-এ যায়, কিন্তু browser-কে generic message দেখায় — SQL structure leak হয় না
+            error_log('[DB ERROR] ' . $e->getMessage() . ' | SQL: ' . $sql);
+            throw new RuntimeException('A database error occurred. Please try again later.');
+        }
     }
 
     public static function rows(string $sql, array $params = []): array {
