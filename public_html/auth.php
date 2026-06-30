@@ -50,12 +50,40 @@ function rz_is_admin(): bool {
 }
 
 function rz_admin_login(string $password): bool {
+    // ── Brute-force protection: max 5 failed attempts, then 15 min lockout ──
+    $now          = time();
+    $lockUntil    = $_SESSION['rz_admin_lock_until']   ?? 0;
+    $failCount    = $_SESSION['rz_admin_fail_count']   ?? 0;
+
+    if ($lockUntil > $now) {
+        return false; // still locked out
+    }
+
     // ADMIN_PASS — config.php তে define করা আছে
-    if ($password === ADMIN_PASS) {
+    // hash_equals() ব্যবহার করছি timing attack এড়াতে (string === তুলনায় নিরাপদ)
+    if (hash_equals(ADMIN_PASS, $password)) {
         $_SESSION['rz_admin'] = true;
+        unset($_SESSION['rz_admin_fail_count'], $_SESSION['rz_admin_lock_until']);
         return true;
     }
+
+    $failCount++;
+    $_SESSION['rz_admin_fail_count'] = $failCount;
+    if ($failCount >= 5) {
+        $_SESSION['rz_admin_lock_until'] = $now + (15 * 60); // 15 minutes lockout
+        $_SESSION['rz_admin_fail_count'] = 0;
+    }
     return false;
+}
+
+function rz_admin_login_locked(): bool {
+    $lockUntil = $_SESSION['rz_admin_lock_until'] ?? 0;
+    return $lockUntil > time();
+}
+
+function rz_admin_login_lock_seconds_left(): int {
+    $lockUntil = $_SESSION['rz_admin_lock_until'] ?? 0;
+    return max(0, $lockUntil - time());
 }
 
 function rz_admin_logout(): void {
