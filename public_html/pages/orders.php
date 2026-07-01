@@ -16,7 +16,7 @@ render_head('আমার অর্ডার — ' . ($cfg['site_name'] ?? 'Raqi
 
   <?php if (!$u): ?>
   <div class="nacc">
-    <div class="ni">📦</div>
+    <div class="ni"><svg viewBox="0 0 24 24" style="width:56px;height:56px;fill:var(--gray)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
     <h2>লগিন করুন</h2>
     <p>অর্ডার দেখতে লগিন করুন</p>
     <div class="nacc-b"><a href="/" class="bg">লগিন করুন</a></div>
@@ -40,7 +40,7 @@ render_head('আমার অর্ডার — ' . ($cfg['site_name'] ?? 'Raqi
         <div class="om">
           <span class="on"><?= htmlspecialchars($o['name']) ?></span>
           <?php if ($o['serial_number']): ?>
-          <span style="font-size:.7rem;color:var(--g);font-weight:700">🔖 <?= htmlspecialchars($o['serial_number']) ?></span>
+          <span style="font-size:.7rem;color:var(--g);font-weight:700;display:flex;align-items:center;gap:3px"><svg viewBox="0 0 24 24" style="width:11px;height:11px;fill:currentColor"><path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7v10c0 1.1.9 1.99 2 1.99L16 19c.67 0 1.27-.33 1.63-.84L22 12l-4.37-6.16z"/></svg><?= htmlspecialchars($o['serial_number']) ?></span>
           <?php endif; ?>
           <span class="od2"><?= date('d M Y, h:i A', strtotime($o['created_at'])) ?></span>
         </div>
@@ -54,7 +54,7 @@ render_head('আমার অর্ডার — ' . ($cfg['site_name'] ?? 'Raqi
     <?php endforeach; ?>
     <?php else: ?>
     <div class="emp">
-      <div class="ei">📦</div>
+      <div class="ei"><svg viewBox="0 0 24 24" style="width:48px;height:48px;fill:var(--gray)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
       <h3 data-bn="কোনো অর্ডার নেই" data-en="No orders yet">কোনো অর্ডার নেই</h3>
       <p>এখনো কোনো অর্ডার করা হয়নি</p>
       <a href="/home" style="display:inline-flex;padding:10px 20px;background:linear-gradient(135deg,var(--g),var(--gd));color:var(--k);border-radius:50px;font-weight:700;text-decoration:none;font-size:.84rem;margin-top:8px">পণ্য দেখুন</a>
