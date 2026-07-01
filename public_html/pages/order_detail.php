@@ -33,7 +33,7 @@ render_head('অর্ডার বিস্তারিত', $cfg);
         <span style="font-size:.72rem;color:var(--gray)">অর্ডার নম্বর</span>
         <div style="display:flex;align-items:center;gap:8px;background:var(--k3);border:2px solid var(--g);border-radius:10px;padding:10px 16px;width:100%;justify-content:space-between">
           <span style="font-size:1rem;font-weight:700;color:var(--g);letter-spacing:1px" id="serialNum"><?= htmlspecialchars($order['serial_number']) ?></span>
-          <button id="copyBtn" onclick="copySerial()" style="background:var(--gl);border:1px solid var(--g);color:var(--g);border-radius:6px;padding:5px 12px;font-size:.76rem;cursor:pointer;font-family:inherit;font-weight:700">📋 কপি</button>
+          <button id="copyBtn" onclick="copySerial()" style="background:var(--gl);border:1px solid var(--g);color:var(--g);border-radius:6px;padding:5px 12px;font-size:.76rem;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;gap:4px"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>কপি</button>
         </div>
       </div>
       <?php endif; ?>
@@ -42,7 +42,7 @@ render_head('অর্ডার বিস্তারিত', $cfg);
 
     <!-- Delivery Info -->
     <div class="odsc">
-      <p class="odst2">📍 ডেলিভারি ঠিকানা</p>
+      <p class="odst2" style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--g)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>ডেলিভারি ঠিকানা</p>
       <div class="odig">
         <div class="odr"><span class="odl">নাম:</span><span class="odv"><?= htmlspecialchars($order['name']) ?></span></div>
         <div class="odr"><span class="odl">মোবাইল:</span><span class="odv"><?= htmlspecialchars($order['mobile']) ?></span></div>
@@ -57,7 +57,7 @@ render_head('অর্ডার বিস্তারিত', $cfg);
 
     <!-- Order Items -->
     <div class="odsc">
-      <p class="odst2">📦 অর্ডার করা পণ্য</p>
+      <p class="odst2" style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--g)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>অর্ডার করা পণ্য</p>
       <div class="odit">
         <?php foreach ($items as $item):
           $opts = json_decode($item['selected_options'] ?? '{}', true) ?: [];
@@ -83,18 +83,30 @@ render_head('অর্ডার বিস্তারিত', $cfg);
 
     <!-- Payment Info -->
     <div class="odsc">
-      <p class="odst2">💳 Payment তথ্য</p>
+      <p class="odst2" style="display:flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:var(--g)"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>Payment তথ্য</p>
       <div class="odig">
         <div class="odr">
           <span class="odl">পদ্ধতি:</span>
-          <span class="odv">
-            <?= $order['payment_method']==='bkash' ? '🏦 বিকাশ' : ($order['payment_method']==='nagad' ? '📱 নগদ' : '💵 Cash on Delivery') ?>
+          <span class="odv" style="display:inline-flex;align-items:center;gap:5px">
+            <?php if ($order['payment_method']==='bkash'): ?>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#E2136E"><path d="M3 7h18v2H3zm2 4h14v2H5zm-2 4h18v2H3z"/></svg>বিকাশ
+            <?php elseif ($order['payment_method']==='nagad'): ?>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#F6921E"><path d="M17 1H7c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-2-2-2zm0 18H7V5h10v14z"/></svg>নগদ
+            <?php else: ?>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#4CAF50"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>Cash on Delivery
+            <?php endif; ?>
           </span>
         </div>
         <div class="odr">
           <span class="odl">Status:</span>
-          <span class="odv">
-            <?= in_array($order['payment_status'],['paid','cod']) ? '✅ পরিশোধ হয়েছে' : ($order['payment_status']==='pending_verification' ? '⏳ যাচাই বাকি' : '⏳ অপেক্ষায়') ?>
+          <span class="odv" style="display:inline-flex;align-items:center;gap:5px">
+            <?php if (in_array($order['payment_status'],['paid','cod'])): ?>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#4CAF50"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>পরিশোধ হয়েছে
+            <?php elseif ($order['payment_status']==='pending_verification'): ?>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#FFC107"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 11 12.41V7h2v4.59l4 4z"/></svg>যাচাই বাকি
+            <?php else: ?>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:#FFC107"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 11 12.41V7h2v4.59l4 4z"/></svg>অপেক্ষায়
+            <?php endif; ?>
           </span>
         </div>
         <?php if ($order['sender_last4']): ?>
@@ -106,9 +118,9 @@ render_head('অর্ডার বিস্তারিত', $cfg);
     <!-- Edit / Cancel -->
     <?php if ($editable): ?>
     <div class="odsc">
-      <p class="edit-24-note">⏰ ২৪ ঘণ্টার মধ্যে পরিবর্তন বা বাতিল করতে পারবেন</p>
-      <button class="bed" id="editBtn" onclick="document.getElementById('editForm').style.display='block';this.style.display='none'">✏️ ঠিকানা পরিবর্তন</button>
-      <button class="bcn" onclick="cancelOrder()">❌ অর্ডার বাতিল</button>
+      <p class="edit-24-note" style="display:flex;align-items:flex-start;gap:6px"><svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:#FFC107;flex-shrink:0;margin-top:1px"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 11 12.41V7h2v4.59l4 4z"/></svg>২৪ ঘণ্টার মধ্যে পরিবর্তন বা বাতিল করতে পারবেন</p>
+      <button class="bed" id="editBtn" onclick="document.getElementById('editForm').style.display='block';this.style.display='none'" style="display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75z"/></svg>ঠিকানা পরিবর্তন</button>
+      <button class="bcn" onclick="cancelOrder()" style="display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>অর্ডার বাতিল</button>
       <form id="editForm" action="/api/orders/<?= $id ?>/edit" method="POST" style="display:none;margin-top:12px" class="fs">
         <div class="fd"><label>নাম</label><input name="name" class="inp" value="<?= htmlspecialchars($order['name']) ?>"></div>
         <div class="fd"><label>মোবাইল</label><input name="mobile" class="inp" value="<?= htmlspecialchars($order['mobile']) ?>"></div>
@@ -118,7 +130,7 @@ render_head('অর্ডার বিস্তারিত', $cfg);
         <div class="fd"><label>গ্রাম</label><input name="village" class="inp" value="<?= htmlspecialchars($order['village']) ?>"></div>
         <div class="fd"><label>রাস্তা</label><input name="road_name" class="inp" value="<?= htmlspecialchars($order['road_name'] ?? '') ?>"></div>
         <div class="fd"><label>হোল্ডিং</label><input name="holding_number" class="inp" value="<?= htmlspecialchars($order['holding_number'] ?? '') ?>"></div>
-        <button type="submit" class="bg" style="margin-top:5px">✅ সংরক্ষণ</button>
+        <button type="submit" class="bg" style="margin-top:5px;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>সংরক্ষণ</button>
       </form>
     </div>
     <?php endif; ?>
@@ -130,16 +142,17 @@ render_head('অর্ডার বিস্তারিত', $cfg);
 function copySerial() {
   var text = document.getElementById('serialNum').textContent.trim();
   var btn = document.getElementById('copyBtn');
-  var orig = btn.textContent;
+  var orig = btn.innerHTML;
+  var doneHtml = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>কপি!';
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(function() { btn.textContent = '✅ কপি!'; setTimeout(function(){btn.textContent=orig;}, 2000); });
+    navigator.clipboard.writeText(text).then(function() { btn.innerHTML = doneHtml; setTimeout(function(){btn.innerHTML=orig;}, 2000); });
   } else {
     var inp = document.createElement('input'); inp.value = text;
     inp.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
     document.body.appendChild(inp); inp.focus(); inp.select();
-    try { document.execCommand('copy'); btn.textContent = '✅ কপি!'; } catch(e) {}
+    try { document.execCommand('copy'); btn.innerHTML = doneHtml; } catch(e) {}
     document.body.removeChild(inp);
-    setTimeout(function(){btn.textContent=orig;}, 2000);
+    setTimeout(function(){btn.innerHTML=orig;}, 2000);
   }
 }
 async function cancelOrder() {
