@@ -9,7 +9,7 @@ render_head('Updates — ' . ($cfg['site_name'] ?? 'Raqizone'), $cfg);
     <span class="st" data-bn="আপডেটস" data-en="Updates">Updates</span>
   </div>
   <div id="postFeed" style="padding:12px 14px;display:flex;flex-direction:column;gap:14px">
-    <div style="text-align:center;padding:32px;color:var(--gray)"><div style="font-size:2rem;margin-bottom:8px">📢</div><p>Loading...</p></div>
+    <div style="text-align:center;padding:32px;color:var(--gray)"><div style="margin-bottom:8px"><svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:var(--gray)"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></div><p>Loading...</p></div>
   </div>
 </div>
 
@@ -30,7 +30,7 @@ render_head('Updates — ' . ($cfg['site_name'] ?? 'Raqizone'), $cfg);
 .post-body{padding:13px 14px}
 .post-title{font-size:1rem;font-weight:700;margin-bottom:6px;color:var(--w);line-height:1.4}
 .post-content{font-size:.86rem;color:var(--gray);line-height:1.6;margin-bottom:10px;white-space:pre-wrap;word-break:break-word}
-.post-date{font-size:.72rem;color:var(--gray);margin-bottom:10px}
+.post-date{font-size:.72rem;color:var(--gray);margin-bottom:10px;display:flex;align-items:center;gap:5px}
 .post-link{display:inline-flex;align-items:center;gap:6px;background:var(--gl);border:1px solid var(--g);color:var(--g);padding:7px 14px;border-radius:50px;font-size:.8rem;font-weight:700;text-decoration:none;margin-bottom:10px}
 .react-bar{display:flex;align-items:center;gap:4px;padding:8px 0;border-top:1px solid var(--bdr);flex-wrap:wrap}
 .react-btn{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:4px 6px;border-radius:8px;line-height:1}
@@ -48,7 +48,14 @@ render_head('Updates — ' . ($cfg['site_name'] ?? 'Raqizone'), $cfg);
 
 <script>
 var IS_USER = <?= $u ? 'true' : 'false' ?>;
+// reaction emoji-গুলো content হিসেবে রাখা হয়েছে (এগুলো user-generated reaction symbol, UI icon না)
 var EMOJIS = ['👍','❤️','😂','😮','😢','🙏'];
+
+var ICO_BELL = '<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>';
+var ICO_CALENDAR = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>';
+var ICO_PLAY = '<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M8 5v14l11-7z"/></svg>';
+var ICO_LINK = '<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>';
+var ICO_SEND = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
 
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -62,7 +69,7 @@ async function loadPosts(){
 }
 
 function renderEmpty(){
-  document.getElementById('postFeed').innerHTML='<div style="text-align:center;padding:48px 20px;color:var(--gray)"><div style="font-size:3rem;margin-bottom:12px">📢</div><p>এখনো কোনো আপডেট নেই</p></div>';
+  document.getElementById('postFeed').innerHTML='<div style="text-align:center;padding:48px 20px;color:var(--gray)"><div style="margin-bottom:12px">'+ICO_BELL.replace('width:13px;height:13px','width:48px;height:48px')+'</div><p>এখনো কোনো আপডেট নেই</p></div>';
 }
 
 function renderPosts(posts){
@@ -78,16 +85,16 @@ function renderPosts(posts){
     if(post.image_path)html+='<img src="'+post.image_path+'" class="post-img" alt="" onclick="openImgFull(\''+post.image_path+'\')">';
     html+='<div class="post-body">';
     if(post.title)html+='<p class="post-title">'+esc(post.title)+'</p>';
-    html+='<p class="post-date">📅 '+esc(dateStr)+'</p>';
+    html+='<p class="post-date">'+ICO_CALENDAR+' '+esc(dateStr)+'</p>';
     if(post.content)html+='<p class="post-content">'+esc(post.content)+'</p>';
-    if(post.video_url)html+='<button onclick="openVid(\''+esc(post.video_url)+'\')" style="display:inline-flex;align-items:center;gap:6px;background:var(--k3);border:1.5px solid var(--g);color:var(--g);padding:8px 16px;border-radius:50px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px">▶ Video দেখুন</button>';
-    if(post.link_url)html+='<a href="'+esc(post.link_url)+'" target="_blank" class="post-link">'+esc(post.link_text||'🔗 দেখুন')+'</a>';
+    if(post.video_url)html+='<button onclick="openVid(\''+esc(post.video_url)+'\')" style="display:inline-flex;align-items:center;gap:6px;background:var(--k3);border:1.5px solid var(--g);color:var(--g);padding:8px 16px;border-radius:50px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:10px">'+ICO_PLAY+' Video দেখুন</button>';
+    if(post.link_url)html+='<a href="'+esc(post.link_url)+'" target="_blank" class="post-link">'+ICO_LINK+' '+esc(post.link_text||'দেখুন')+'</a>';
     html+='<div class="react-bar" id="rb_'+post.id+'"><span class="react-count" id="rc_'+post.id+'">'+post.react_count+'</span>';
     EMOJIS.forEach(function(e){html+='<button class="react-btn'+(post.my_reaction===e?' active':'')+'" title="'+e+'" onclick="react('+post.id+',\''+e+'\')">'+e+'</button>';});
     html+='</div></div>';
     html+='<div class="cmts-sec" id="cmts_'+post.id+'">';
     post.comments.forEach(function(c){html+='<div class="cmt-item"><p class="cmt-name">'+esc(c.user_name||'User')+'</p><p class="cmt-text">'+esc(c.comment)+'</p></div>';});
-    if(IS_USER)html+='<div class="cmt-form"><input class="cmt-inp" id="ci_'+post.id+'" placeholder="মন্তব্য করুন..." onkeydown="if(event.key===\'Enter\')sendComment('+post.id+')"><button class="cmt-send" onclick="sendComment('+post.id+')">➤</button></div>';
+    if(IS_USER)html+='<div class="cmt-form"><input class="cmt-inp" id="ci_'+post.id+'" placeholder="মন্তব্য করুন..." onkeydown="if(event.key===\'Enter\')sendComment('+post.id+')"><button class="cmt-send" onclick="sendComment('+post.id+')">'+ICO_SEND+'</button></div>';
     html+='</div>';
     card.innerHTML=html;
     feed.appendChild(card);
