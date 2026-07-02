@@ -1,8 +1,8 @@
 RewriteEngine On
 RewriteBase /
 
-# ── SECURITY: protect sensitive files from direct browser access ──
-<FilesMatch "\.(env|log|sql|bak|ini|conf|dist|old|orig|save|swo|swp)$">
+# ── SECURITY: protect sensitive non-PHP files from direct browser access ──
+<FilesMatch "\.(env|log|sql|bak|ini|conf|dist|old|orig|save|swo|swp|sh|md)$">
     Require all denied
 </FilesMatch>
 
@@ -15,6 +15,11 @@ RewriteBase /
 </Files>
 
 Options -Indexes
+
+# ── SECURITY: root-level PHP library files শুধু ROOT এ direct request হলে block করে —
+# path-aware, তাই pages/auth.php, admin/auth.php ইত্যাদি প্রভাবিত হয় না ──
+RewriteCond %{REQUEST_URI} ^/(config|database|auth|router)\.php$
+RewriteRule ^ - [F,L]
 
 # Static ও uploads সরাসরি serve
 RewriteRule ^static/ - [L]
@@ -69,7 +74,16 @@ RewriteCond %{QUERY_STRING} (<|%3C).*script.*(>|%3E) [NC,OR]
 RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
 RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
 RewriteCond %{QUERY_STRING} (eval\(|base64_decode|gzip|inflate|proc_open|shell_exec) [NC,OR]
+RewriteCond %{QUERY_STRING} (union.*select|insert.*into|drop.*table) [NC,OR]
 RewriteCond %{QUERY_STRING} (boot\.ini|etc/passwd|self/environ) [NC]
+RewriteRule ^ - [F,L]
+
+# ── WordPress / common scanner probes — direct 403, LiteSpeed-safe ──
+RewriteCond %{REQUEST_URI} ^/wp-admin [NC,OR]
+RewriteCond %{REQUEST_URI} ^/wp-login [NC,OR]
+RewriteCond %{REQUEST_URI} ^/wp-content [NC,OR]
+RewriteCond %{REQUEST_URI} ^/wordpress [NC,OR]
+RewriteCond %{REQUEST_URI} ^/xmlrpc\.php [NC]
 RewriteRule ^ - [F,L]
 
 # ── SECURITY HEADERS ──
@@ -80,7 +94,7 @@ RewriteRule ^ - [F,L]
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
 
-# ── PERFORMANCE (unchanged) ──
+# ── PERFORMANCE ──
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
 </IfModule>
@@ -107,9 +121,10 @@ order allow,deny
 allow from all
 </Files>
 
-deny from 31.220.103.142
-deny from 2a06:98c0:3600:0000:0000:0000:0000:0103
-
-deny from 66.249.74.102
-deny from 152.32.132.203
-deny from 32.193.46.237
+# ── IP Block List (LiteSpeed-safe syntax — deny from নয়) ──
+# Google crawler bot (66.249.74.102) unblock করা — SEO/indexing এর জন্য জরুরি
+RewriteCond %{REMOTE_ADDR} ^2a06\:98c0\:3600\:0000\:0000\:0000\:0000\:0103$ [OR]
+RewriteCond %{REMOTE_ADDR} ^152\.32\.132\.203$ [OR]
+RewriteCond %{REMOTE_ADDR} ^32\.193\.46\.237$ [OR]
+RewriteCond %{REMOTE_ADDR} ^31\.220\.103\.142$
+RewriteRule ^ - [F,L]
